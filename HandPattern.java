@@ -1,0 +1,66 @@
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class HandPattern {
+    private List<String> requiredCardNames; // e.g. ["Ex Ryzeal", "Ice Ryzeal"]
+    private Map<String, Integer> requiredRoles; // e.g. {"handtrap": 2}
+
+    public HandPattern(List<String> cardNames, Map<String, Integer> roles) {
+        this.requiredCardNames = cardNames;
+        this.requiredRoles = roles;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("HandPattern: ");
+        sb.append("Required Cards: ").append(requiredCardNames).append(", ");
+        sb.append("Required Roles: ").append(requiredRoles);
+        return sb.toString();
+    }
+
+    public boolean matches(List<String> hand) {
+
+        List<String> handCopy = List.copyOf(hand); // Create a copy of the hand to avoid mutation
+
+        // Check specific card names
+        for (String name : requiredCardNames) {
+            if (!hand.remove(name))
+                return false;
+        }
+
+        // Check roles
+        Map<String, Integer> roleCounts = new HashMap<>();
+        Set<String> seenCards = new HashSet<>();
+
+        for (String card : handCopy) {
+            CardRoles.CardInfo info = CardRoles.getRole(card);
+            String role = info.role;
+            boolean isOPT = info.isOPT;
+
+            boolean alreadySeen = seenCards.contains(card);
+
+            // If it's OPT and we've already seen it, skip adding its role again
+            if (isOPT && alreadySeen) {
+                continue;
+            }
+
+            // Add role to count
+            roleCounts.put(role, roleCounts.getOrDefault(role, 0) + 1);
+
+            // Mark the card as seen
+            seenCards.add(card);
+        }
+
+        // Check required roles
+        for (Map.Entry<String, Integer> entry : requiredRoles.entrySet()) {
+            String role = entry.getKey();
+            int requiredCount = entry.getValue();
+            if (roleCounts.getOrDefault(role, 0) < requiredCount)
+                return false;
+        }
+
+        return true;
+    }
+}
