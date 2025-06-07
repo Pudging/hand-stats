@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,9 +9,17 @@ public class HandPattern {
     private List<String> requiredCardNames; // e.g. ["Ex Ryzeal", "Ice Ryzeal"]
     private Map<String, Integer> requiredRoles; // e.g. {"handtrap": 2}
 
+    private double handValue = 0;
+
     public HandPattern(List<String> cardNames, Map<String, Integer> roles) {
         this.requiredCardNames = cardNames;
         this.requiredRoles = roles;
+    }
+
+    public HandPattern(List<String> cardNames, Map<String, Integer> roles, double handValue) {
+        this.requiredCardNames = cardNames;
+        this.requiredRoles = roles;
+        this.handValue = handValue;
     }
 
     public String toString() {
@@ -20,13 +29,30 @@ public class HandPattern {
         return sb.toString();
     }
 
+    public double getHandValue() {
+        return handValue;
+    }
+    public void setHandValue(double handValue) {
+        this.handValue = handValue;
+    }
+
+
+    public List<String> getRequiredCards() {
+        return requiredCardNames;
+    }
+
+    public Map<String, Integer> getRoleCounts() {
+        return requiredRoles;
+    }
+
     public boolean matches(List<String> hand) {
 
         List<String> handCopy = List.copyOf(hand); // Create a copy of the hand to avoid mutation
+       List<String> handCopy2 = new ArrayList<>(hand);
 
         // Check specific card names
         for (String name : requiredCardNames) {
-            if (!hand.remove(name))
+            if (!handCopy2.remove(name))
                 return false;
         }
 
@@ -62,5 +88,13 @@ public class HandPattern {
         }
 
         return true;
+    }
+
+    public void setRequiredCardNames(List<String> requiredCardNames) {
+        this.requiredCardNames = requiredCardNames;
+    }
+
+    public void setRequiredRoles(Map<String, Integer> requiredRoles) {
+        this.requiredRoles = requiredRoles;
     }
 }

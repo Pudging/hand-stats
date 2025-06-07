@@ -75,4 +75,12 @@ public class CardRoles {
     public static CardInfo getRole(String cardName) {
         return cardRoles.getOrDefault(cardName, new CardInfo("unknown", true));
     }
+
+    
+    public static CardInfo getEffectiveInfo(String cardName, Map<String, CardInfo> overrides) {
+        if (overrides.containsKey(cardName)) {
+            return overrides.get(cardName);
+        }
+        return cardRoles.getOrDefault(cardName, new CardInfo("unknown", true));
+    }
 }
